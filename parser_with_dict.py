@@ -134,17 +134,31 @@ data_for_search = dict()
 @dp.callback_query_handler(Text(startswith='from'))
 async def send_url(call: types.CallbackQuery):
     res = call.data.split('_')[1]
-    buttons = [
-        types.InlineKeyboardButton(text="Не важливо", callback_data="to_nothing"),
-        types.InlineKeyboardButton(text="1000", callback_data="to_1000"),
-        types.InlineKeyboardButton(text="5000", callback_data="to_5000"),
-        types.InlineKeyboardButton(text="10000", callback_data="to_10000")
-    ]
     if res == 'nothing':
         data_for_search[f'{call.from_user.id}'] = {
             'price_from': 0
         }
+        buttons = [
+            types.InlineKeyboardButton(text="Не важливо", callback_data="to_nothing"),
+            types.InlineKeyboardButton(text="1000", callback_data="to_1000"),
+            types.InlineKeyboardButton(text="5000", callback_data="to_5000"),
+            types.InlineKeyboardButton(text="10000", callback_data="to_10000")]
     else:
+        if res == '5000':
+            buttons = [
+                types.InlineKeyboardButton(text="Не важливо", callback_data="to_nothing"),
+                types.InlineKeyboardButton(text="5000", callback_data="to_5000"),
+                types.InlineKeyboardButton(text="10000", callback_data="to_10000")]
+        elif res == '10000':
+            buttons = [
+                types.InlineKeyboardButton(text="Не важливо", callback_data="to_nothing"),
+                types.InlineKeyboardButton(text="10000", callback_data="to_10000")]
+        else:
+            buttons = [
+                types.InlineKeyboardButton(text="Не важливо", callback_data="to_nothing"),
+                types.InlineKeyboardButton(text="1000", callback_data="to_1000"),
+                types.InlineKeyboardButton(text="5000", callback_data="to_5000"),
+                types.InlineKeyboardButton(text="10000", callback_data="to_10000")]
         data_for_search[f'{call.from_user.id}'] = {
             'price_from': int(res)
         }
