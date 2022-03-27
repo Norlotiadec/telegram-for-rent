@@ -1,1 +1,1 @@
-web: python parser_with_json.py
+web: python parser_with_dict.py
