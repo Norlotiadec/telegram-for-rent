@@ -90,11 +90,6 @@ def run_parser(url1, city, room, price_from, price_to):
     return db
 
 
-bot = Bot(token="5154073530:AAG-d3vzXnNgCo4mioBU0fPOucPxQ9qWpjY")
-dp = Dispatcher(bot)
-logging.basicConfig(level=logging.INFO)
-
-
 @dp.message_handler(commands='start')
 async def cmd_start(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -274,6 +269,7 @@ async def send_url(call: types.CallbackQuery):
         url[0] = 'https://www.olx.ua/uk/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/'
         data_for_search.clear()
         count.clear()
+        db.clear()
         await call.message.answer('Оголошення закінчилися. Знайти квартири з новими параметрами?',
                                   reply_markup=keyboard)
 
