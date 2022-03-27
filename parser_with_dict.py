@@ -266,8 +266,9 @@ async def send_url(call: types.CallbackQuery):
             detail = order_value['detail']
             price = order_value['price']
             await call.message.answer(f'Назва:{title}\nДетально:{detail}\nЦіна:{price}')
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    keyboard.add(types.InlineKeyboardButton(text="Наступні 5 оголошень", callback_data="next"))
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.add(types.InlineKeyboardButton(text="Наступні 5 оголошень", callback_data="next"),
+                 types.InlineKeyboardButton(text='Почати новий пошук', callback_data='restart'))
 
     if count[0] < len(db) < count[0] + 5:
         count[0] += len(db) - count[0]
@@ -286,6 +287,17 @@ async def send_url(call: types.CallbackQuery):
         db.clear()
         await call.message.answer('Оголошення закінчилися. Знайти квартири з новими параметрами?',
                                   reply_markup=keyboard)
+
+
+@dp.callback_query_handler(Text(equals='restart'))
+async def reset(call: types.CallbackQuery):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(types.InlineKeyboardButton(text="/start"))
+    url[0] = 'https://www.olx.ua/uk/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/'
+    data_for_search.clear()
+    count.clear()
+    db.clear()
+    await call.message.answer('Знайти квартири з новими параметрами?', reply_markup=keyboard)
 
 
 if __name__ == '__main__':
