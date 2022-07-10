@@ -1,25 +1,10 @@
 import logging
 import requests
 from bs4 import BeautifulSoup
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import executor, types
 from aiogram.dispatcher.filters import Text
 from aiogram.utils.exceptions import BadRequest
-import os
-
-TOKEN = os.getenv('BOT_TOKEN')
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
-
-HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
-
-# webhook settings
-WEBHOOK_HOST = f'https://{HEROKU_APP_NAME}.herokuapp.com'
-WEBHOOK_PATH = f'/webhook/{TOKEN}'
-WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-
-# webserver settings
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = os.getenv('PORT', default=8000)
+from config import *
 
 
 async def on_startup(dispatcher):
@@ -56,9 +41,10 @@ def search_house(url_name, price_from=0, price_to=0, num_room=0):
 
 
 db = dict()
+data_for_search = dict()
 
 
-def run_parser(url1, city, room, price_from, price_to):
+def run_parser(url1):
     headers = {
         "Accept": "*/*",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:99.0) Gecko/20100101 Firefox/99.0"
@@ -116,7 +102,7 @@ async def cmd_start(message: types.Message):
 @dp.callback_query_handler(Text(startswith='city'))
 async def send_url(call: types.CallbackQuery):
     res = call.data.split('_')[1]
-    url[0] = url[0] + res + '/'
+    url[0] += res + '/'
     buttons = [
         types.InlineKeyboardButton(text="Не важливо", callback_data="from_nothing"),
         types.InlineKeyboardButton(text="1000", callback_data="from_1000"),
@@ -126,9 +112,6 @@ async def send_url(call: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(row_width=4)
     keyboard.add(*buttons)
     await call.message.answer('Мінімальна ціна', reply_markup=keyboard)
-
-
-data_for_search = dict()
 
 
 @dp.callback_query_handler(Text(startswith='from'))
@@ -218,10 +201,9 @@ async def search(message: types.Message):
     room = data_for_search[f'{message.from_user.id}']['room']
     price_from = data_for_search[f'{message.from_user.id}']['price_from']
     price_to = data_for_search[f'{message.from_user.id}']['price_to']
-    city = url[0].split('/')[-2]
 
     res = search_house(url[0], price_from, price_to, room)
-    run_parser(res, city, room, price_from, price_to)
+    run_parser(res)
     count.append(0)
 
     count[0] += 5
