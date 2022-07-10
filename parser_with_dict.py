@@ -224,8 +224,9 @@ async def search(message: types.Message):
             detail = order_value['detail']
             price = order_value['price']
             await message.answer(f'Назва:{title}\nДетально:{detail}\nЦіна:{price}')
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    keyboard.add(types.InlineKeyboardButton(text="Наступні 5 оголошень", callback_data="next"))
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard.add(types.InlineKeyboardButton(text="Наступні 5 оголошень", callback_data="next"),
+                 types.InlineKeyboardButton(text='Почати новий пошук', callback_data='restart'))
     await message.answer(f'Оголошень: {count[0]} / {len(db)}', reply_markup=keyboard)
 
 
